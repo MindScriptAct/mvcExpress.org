@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>mvcExpress — The simplest and fastest MVC framework for Unity!</title>
+  <meta name="description" content="mvcExpress is a super fast, lightweight MVC framework for Unity. Modular architecture, explicit command flow, lightweight injection, messaging, and clean lifecycle management." />
+
+  <meta property="og:title" content="mvcExpress — MVC Framework for Unity" />
+  <meta property="og:description" content="The simplest and fastest MVC framework for Unity." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mvcExpress.org" />
+
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --fg: #0f172a;
+      --muted: #475569;
+      --border: #e5e7eb;
+      --panel: #ffffff;
+      --soft: #f8fafc;
+      --brand: #111827;
+      --shadow: 0 10px 30px rgba(2, 6, 23, .06);
+      --radius: 16px;
+      --radius2: 12px;
+      --max: 1080px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--fg);
+      background: radial-gradient(1200px 500px at 30% -10%, #eef2ff 0%, transparent 55%),
+                  radial-gradient(900px 450px at 85% 0%, #f1f5f9 0%, transparent 60%),
+                  var(--bg);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: var(--max); margin: 0 auto; padding: 22px; }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.8);
+      border-bottom: 1px solid rgba(229,231,235,.7);
+      z-index: 10;
+    }
+    .headerInner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      color: var(--brand);
+      white-space: nowrap;
+    }
+    .badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: #334155;
+      background: #fff;
+    }
+    .nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .nav a {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      color: #0f172a;
+    }
+    .nav a:hover { text-decoration: none; background: #f8fafc; border-color: #eef2f7; }
+
+    /* Hero */
+    .hero {
+      padding: 40px 0 18px;
+    }
+    .heroTitle {
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1.05;
+      margin: 0 0 10px;
+      letter-spacing: -0.8px;
+    }
+    .heroSub {
+      font-size: clamp(18px, 2.2vw, 22px);
+      color: var(--muted);
+      margin: 0 0 8px;
+      max-width: 70ch;
+    }
+    .heroFoot {
+      margin: 8px 0 0;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .heroFoot s { opacity: .85; }
+
+    .ctaRow {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 20px 0 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #0f172a;
+      font-weight: 700;
+      box-shadow: 0 1px 0 rgba(2,6,23,.03);
+    }
+    .btn:hover { text-decoration: none; background: #f8fafc; }
+    .btnPrimary {
+      background: #111827;
+      color: #fff;
+      border-color: #111827;
+      box-shadow: 0 10px 30px rgba(17,24,39,.15);
+    }
+    .btnPrimary:hover { background: #0b1220; }
+    .btnSmall { padding: 8px 10px; font-weight: 700; font-size: 14px; border-radius: 10px; }
+
+    /* Sections */
+    .section { padding: 26px 0; }
+    .sectionTitle {
+      font-size: 22px;
+      margin: 0 0 10px;
+      letter-spacing: -0.2px;
+    }
+    .sectionLead {
+      margin: 0;
+      color: var(--muted);
+      max-width: 80ch;
+    }
+
+    /* Cards */
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .grid2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      letter-spacing: -0.1px;
+    }
+    .card p { margin: 0; color: #334155; }
+    .card ul { margin: 10px 0 0; padding-left: 18px; color: #334155; }
+    .card li { margin: 6px 0; }
+
+    /* Feature list */
+    .featureList {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 0;
+      list-style: none;
+    }
+    .featureList li {
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 10px 12px;
+      background: #fff;
+    }
+    .featureList strong { display: block; font-size: 14px; margin-bottom: 2px; }
+    .featureList span { display: block; font-size: 13px; color: #475569; }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 10px 0 0;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 28px 0 44px;
+      color: #64748b;
+      font-size: 13px;
+    }
+    .footerRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
+
+    /* Responsive */
+    @media (max-width: 920px) {
+      .grid3 { grid-template-columns: 1fr; }
+      .grid2 { grid-template-columns: 1fr; }
+      .featureList { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container headerInner">
+      <div class="brand">
+        mvcExpress
+        <span class="badge">Unity MVC</span>
+      </div>
+
+      <nav class="nav">
+        <a href="/docs/">Docs</a>
+        <a href="https://github.com/MindScriptAct/mvcExpress-framework-unity" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="btn btnSmall" href="https://github.com/MindScriptAct/mvcExpress-framework-unity/issues" target="_blank" rel="noopener noreferrer">Issues</a>
+        <a class="btn btnSmall" href="https://github.com/MindScriptAct/mvcExpress-framework-unity/discussions" target="_blank" rel="noopener noreferrer">Community</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero -->
+    <section class="hero">
+      <h1 class="heroTitle">mvcExpress is coming back.</h1>
+      <p class="heroSub">The simplest and fastest <s>ActionScript 3</s> c# MVC framework for Unity.</p>
+
+      <div class="ctaRow">
+        <a class="btn btnPrimary" href="/docs/">Read the documentation</a>
+        <a class="btn" href="https://github.com/MindScriptAct/mvcExpress-framework-unity" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+      </div>
+
+      <div class="divider"></div>
+    </section>
+
+    <!-- Summary cards -->
+    <section class="section">
+      <h2 class="sectionTitle">What it is</h2>
+      <p class="sectionLead">
+        mvcExpress provides a clean architectural spine for Unity projects: modules for structure, commands for flow,
+        proxies for state, mediators for UI binding — plus lightweight injection, messaging, and strict lifecycle cleanup.
+      </p>
+
+      <div class="grid3">
+        <div class="card">
+          <h3>Modular MVC</h3>
+          <p>Build your app from independent modules, each with a full MVC stack.</p>
+          <ul>
+            <li>Add/remove modules at runtime</li>
+            <li>Clear ownership boundaries</li>
+            <li>Scales to large codebases</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Explicit logic flow</h3>
+          <p>Application behavior lives in commands — readable, testable, predictable.</p>
+          <ul>
+            <li>Commands can chain other commands</li>
+            <li>Async execution supported</li>
+            <li>No “hidden” behavior in views</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Unity-first performance</h3>
+          <p>Designed for runtime constraints: low overhead, no unnecessary framework magic.</p>
+          <ul>
+            <li>Lightweight dependency injection</li>
+            <li>Message-based decoupling</li>
+            <li>Lifecycle cleanup built in</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature list (homepage-friendly extraction) -->
+    <section class="section">
+      <h2 class="sectionTitle">Key features</h2>
+      <p class="sectionLead">
+        A deliberately minimal framework: separation of responsibility without slowing you down.
+      </p>
+
+      <ul class="featureList">
+        <li>
+          <strong>Static facade</strong>
+          <span>Single entry point to manage modules and orchestration.</span>
+        </li>
+        <li>
+          <strong>Modules</strong>
+          <span>Logical application slices with full MVC implementation.</span>
+        </li>
+        <li>
+          <strong>Deterministic initialization</strong>
+          <span>Controlled mapping order for proxies, services, commands, and mediators.</span>
+        </li>
+        <li>
+          <strong>Commands for logic</strong>
+          <span>Explicit workflows; can chain; supports async execution.</span>
+        </li>
+        <li>
+          <strong>Proxies for state</strong>
+          <span>Encapsulate data; notify via messages; no direct command execution.</span>
+        </li>
+        <li>
+          <strong>Mediators for views</strong>
+          <span>Bind Unity views to logic; handle messages; auto cleanup on destroy.</span>
+        </li>
+        <li>
+          <strong>Lightweight injection</strong>
+          <span>Inject services/proxies into the right layer with minimal overhead.</span>
+        </li>
+        <li>
+          <strong>Messaging</strong>
+          <span>Loose coupling between actors and modules; clear communication contracts.</span>
+        </li>
+        <li>
+          <strong>Lifecycle & cleanup</strong>
+          <span>Automatic disposal; safe teardown; designed for long-running sessions.</span>
+        </li>
+        <li>
+          <strong>Dynamic vs permanent mappings</strong>
+          <span>Support stable core services and removable runtime dependencies.</span>
+        </li>
+      </ul>
+    </section>
+
+    
+
+    <!-- Next steps -->
+    <section class="section">
+      <h2 class="sectionTitle">Get started</h2>
+      <p class="sectionLead">
+        Start with the docs, then explore the repository for examples and ongoing development.
+      </p>
+
+      <div class="ctaRow">
+        <a class="btn btnPrimary" href="/docs/">Open documentation</a>
+        <a class="btn" href="https://github.com/MindScriptAct/mvcExpress-framework-unity" target="_blank" rel="noopener noreferrer">Repository</a>
+        <a class="btn" href="https://github.com/MindScriptAct/mvcExpress-framework-unity/discussions" target="_blank" rel="noopener noreferrer">Ask in Discussions</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <div class="footerRow">
+      <div>© <span id="y"></span> mvcExpress</div>
+      <div>
+        <a href="https://github.com/MindScriptAct/mvcExpress-framework-unity" target="_blank" rel="noopener noreferrer">GitHub</a>
+        &nbsp;·&nbsp;
+        <a href="/docs/">Docs</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
